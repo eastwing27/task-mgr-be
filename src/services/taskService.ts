@@ -7,6 +7,7 @@ import {
 import { prisma } from "../lib/prisma";
 import redisClient from "../lib/redis";
 
+const cacheListTtl = Number(process.env.CACHE_LIST_TTL_SECONDS) || 300;
 
 export const createTask = async (dto: NewTaskDTO) => {
   const task = await prisma.task.create({
@@ -61,7 +62,7 @@ export const getTasks = async (status?: TaskStatus, sortBy?: string): Promise <T
     }
   });
   
-  await redisClient.set(cacheKey, tasks, 300);
+  await redisClient.set(cacheKey, tasks, cacheListTtl);
   return tasks;
 };
 
