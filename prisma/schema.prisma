@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  new 
+  inProgress @map("in_progress")
+  completed
+  cancelled
+
+  @@map("task_status")
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  status      TaskStatus @default(new)
+  deadline    DateTime?  
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  history HistoryEntry[]
+
+  @@index([deadline])
+  @@map("tasks")
+}
+
+model HistoryEntry {
+  id        Int      @id @default(autoincrement())
+  changedAt DateTime @default(now()) @map("changed_at")
+  status    TaskStatus 
+
+  taskId    Int      @map("task_id")
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("history")
+}
