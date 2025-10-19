@@ -1,4 +1,4 @@
-export type TaskStatus = "new" | "inProgress" | "completed" | "cancelled";
+export type TaskStatus = 'new' | 'inProgress' | 'completed' | 'cancelled';
 
 export type NewTaskDTO = {
     title: string;

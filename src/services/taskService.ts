@@ -3,9 +3,9 @@ import {
   TaskBriefDTO, 
   TaskDTO, 
   TaskStatus, 
-  UpdateTaskDTO } from "../types/dto";
-import { prisma } from "../lib/prisma";
-import redisClient from "../lib/redis";
+  UpdateTaskDTO } from '../types/dto';
+import { prisma } from '../lib/prisma';
+import redisClient from '../lib/redis';
 
 const cacheListTtl = Number(process.env.CACHE_LIST_TTL_SECONDS) || 300;
 
@@ -15,7 +15,7 @@ export const createTask = async (dto: NewTaskDTO) => {
       title: dto.title,
       description: dto.description,
       deadline: dto.deadline,
-      status: "new",
+      status: 'new',
       createdAt: new Date(),
     },
   });
@@ -24,7 +24,7 @@ export const createTask = async (dto: NewTaskDTO) => {
     data: {
       taskId: task.id,
       changedAt: new Date(),
-      status: "new",
+      status: 'new',
     },
   });
 
@@ -40,12 +40,12 @@ export const getTasks = async (status?: TaskStatus, sortBy?: string): Promise <T
   
   const getSorting = () => {
     if (!sortBy) return [undefined, undefined];
-    const parts = sortBy.split(":");
+    const parts = sortBy.split(':');
 
     if (parts.length !== 2) return [undefined, undefined];
     const [field, dir] = parts;
 
-    if (dir !== "asc" && dir !== "desc") return [undefined, undefined];
+    if (dir !== 'asc' && dir !== 'desc') return [undefined, undefined];
 
     return [field, dir as 'asc' | 'desc'];
   }
@@ -112,7 +112,7 @@ export const deleteTask = async (id: number): Promise <boolean> => {
     await redisClient.invalidateTaskCache(id);
     return true;
   } catch (error) {
-    console.error("Error deleting task:", error);
+    console.error('Error deleting task:', error);
     return false;
   }
 };
